@@ -1,5 +1,6 @@
 var http = require("http");
 var sax = require("sax");
+var zlib = require("zlib");
 
 var Proc = {};
 Proc.Job = {};
@@ -11,36 +12,30 @@ Proc.Init = function()
 var State = {};
 State.TagName = "";
 
-parser = sax.parser(true);
-parser.onerror = function (inError) {};
-parser.ontext = function (inText)
-{
-  if(State.TagName == "title")
-  {
-	console.log(inText);
-  }
-};
-parser.onopentag = function (inNode)
-{
-	State.TagName = inNode.name;
-};
-parser.onend = function () {};
-
 var options = {
 	host:"www.linkup.com",
-	path:"/xmlFeed.php?gzip=0&access=t3n89z&company=25135&feed=37bc2f75bf1bcfe8450a1a41c200g304"	
+	path:"/xmlFeed.php?gzip=1&access=t3n89z&company=25135&feed=37bc2f75bf1bcfe8450a1a41c200g304"	
 };
-http.get(options, function (response)
+
+var saxStream = sax.createStream(true, {});
+saxStream.on("opentag", function (inNode) {
+  State.TagName = inNode.name;
+})
+saxStream.on("text", function(inText)
+{
+	if(State.TagName == "title")
+	{
+		console.log(inText);
+	}
+});
+
+
+http.get(options, function (inResponse)
 {  
-  response.setEncoding('utf8');
-  response.on('data', function(inChunk)
-  {
-	parser.write(inChunk);
-  });
-  response.on('end', function()
-  {
-	parser.close();
-  });
-  response.on('error', console.error);
+  inResponse.setEncoding('utf8');
+  
+  inResponse.pipe(zlib.createGunzip()).pipe(saxStream);
+  
+  inResponse.on('error', console.error);
   
 });
