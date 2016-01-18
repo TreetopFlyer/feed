@@ -1,6 +1,7 @@
 var http = require("http");
 var sax = require("sax");
 var zlib = require("zlib");
+var fs = require("fs");
 
 var Proc = {};
 Proc.Job = {};
@@ -28,14 +29,31 @@ saxStream.on("text", function(inText)
 		console.log(inText);
 	}
 });
+saxStream.on("error", function(inError)
+{
+	console.log(inError);
+});
+
 
 
 http.get(options, function (inResponse)
 {  
-  inResponse.setEncoding('utf8');
-  
-  inResponse.pipe(zlib.createGunzip()).pipe(saxStream);
-  
-  inResponse.on('error', console.error);
-  
+	var encoding = inResponse.headers['content-encoding'];
+
+	if (encoding == 'gzip')
+	{
+	  inResponse.pipe(zlib.createGunzip()).pipe(saxStream);
+	}
+	else if (encoding == 'deflate')
+	{
+	  inResponse.pipe(zlib.createInflate()).pipe(saxStream);
+	}
+	else
+	{
+	  inResponse.pipe(saxStream);
+	}
+
+
+	inResponse.on('error', console.error);
+
 });
