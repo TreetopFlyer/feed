@@ -1,2 +1,3 @@
-clients/*
+clients/*/descriptions/*
+clients/*/data.js
 node_modules/*

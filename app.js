@@ -2,7 +2,7 @@ var http = require("http");
 var sax = require("sax");
 var zlib = require("zlib");
 var fs = require("fs");
-
+var express = require("express");
 
 
 
@@ -12,6 +12,7 @@ Feed.Config = {};
 Feed.Config.PathConfig = "config.js";
 Feed.Config.PathData = "data.js";
 Feed.Config.PathDescriptions = "descriptions";
+Feed.Config.PathClients = "clients";
 
 Feed.Methods = {};
 Feed.Methods.BuildFiles = function XMLToJSON(inPathXML, inPathJSON, inPathDescription)
@@ -139,4 +140,14 @@ Feed.Methods.Process = function(inPath)
 	});
 };
 
-Feed.Methods.Process(__dirname+"/clients/wegmans");
+
+var Server = express();
+Server.use("/", express.static(__dirname+"/clients"));
+Server.use("/test", express.static(__dirname+"/test"));
+Server.get("/:client/update", function(inReq, inRes, inNext)
+{
+	Feed.Methods.Process(__dirname + "/" + Feed.Config.PathClients + "/" + inReq.params.client);
+	inRes.send("updating", inReq.params.client);
+});
+
+Server.listen(80);
