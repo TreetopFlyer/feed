@@ -3,6 +3,7 @@ var sax = require("sax");
 var zlib = require("zlib");
 var fs = require("fs");
 var express = require("express");
+var handlebars = require("express-handlebars");
 
 
 
@@ -142,12 +143,21 @@ Feed.Methods.Process = function(inPath)
 
 
 var Server = express();
-Server.use("/", express.static(__dirname+"/clients"));
+
+Server.engine("handlebars", handlebars());
+Server.set("view engine", "handlebars");
+
+Server.use("/clients", express.static(__dirname+"/clients"));
 Server.use("/test", express.static(__dirname+"/test"));
 Server.get("/:client/update", function(inReq, inRes, inNext)
 {
 	Feed.Methods.Process(__dirname + "/" + Feed.Config.PathClients + "/" + inReq.params.client);
 	inRes.send("updating", inReq.params.client);
+});
+
+Server.get("/", function(inReq, inRes, inNext)
+{
+	inRes.render("home", {layout:"main"});
 });
 
 Server.listen(80);

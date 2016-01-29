@@ -1,0 +1,82 @@
+{{> nav}}
+<h2>home page</h2>
+
+<style>
+
+table
+{
+	width:100%;
+}
+
+</style>
+
+<table>
+	<thead>
+		<tr>
+			<th>
+				<span>
+					<i class="fa fa-sort-up"></i>
+					<i class="fa fa-sort-down"></i>
+				</span>
+				<span>
+					Title
+				</span>
+			</th>
+			<th>
+				<span>
+					<i class="fa fa-sort-up"></i>
+					<i class="fa fa-sort-down"></i>
+				</span>
+				<span>
+					Category
+				</span>
+			</th>
+			<th>
+				<span>
+					<i class="fa fa-sort-up"></i>
+					<i class="fa fa-sort-down"></i>
+				</span>
+				<span>
+					Location
+				</span>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+	</tbody>
+</table>
+
+<script>
+var str = "abcdefghijklmnopqrstuvwxyz - ";
+var i;
+for(i=0; i<str.length; i++)
+{
+	console.log(str.charCodeAt(i) - 97);
+}
+</script>
+
+<script>
+function sort(inList, inExtractor)
+{
+	var output = [];
+	var i;
+	for(i=0; i<inList.length; i++)
+	{
+		var field = inExtractor(inList[i]).toLowerCase();
+		
+	}
+}
+</script>
+
+<script>
+var i;
+var jqTable = $("tbody");
+var current;
+for(i=0; i<Feed.length; i++)
+{
+	current = Feed[i];
+	var row = $("<tr><td>"+current.Title+"</td><td>"+current.TaxDiv[1]+"</td><td>"+current.TaxLoc[2]+", "+current.TaxLoc[1]+"</td></tr>");
+	jqTable.append(row);
+}
+</script>
