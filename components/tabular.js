@@ -1,66 +1,3 @@
-{{> nav}}
-<h2>home page</h2>
-
-<style>
-
-table
-{
-	width:100%;
-	background:#eee;
-	border-spacing: 0;
-    border-collapse: collapse;
-}
-
-th
-{
-	background:#00325b;
-	cursor:pointer;
-	padding:15px;
-	color:#fff;
-}
-th span
-{
-	display:block;
-	float:left;
-	min-width:20px;
-	min-height:10px;
-}
-th.Sort
-{
-	background:#639ec8;
-}
-
-th i.fa
-{
-	display:none;
-}
-th.Ascending i.fa-sort-up
-{
-	display:inline;
-	margin:3px;
-}
-th.Descending i.fa-sort-down
-{
-	display:inline;
-	margin:3px;
-}
-tbody tr:nth-child(even)
-{
-	background:#fff;
-}
-td
-{
-	padding:12px;
-	color:#333;
-}
-
-</style>
-
-<table>
-</table>
-
-
-<script>
 var Tabular = {};
 Tabular.Generators = {};
 Tabular.Generators.Basic = {
@@ -199,12 +136,11 @@ Tabular.Clear = function(inTabular)
 {
 	inTabular.JQ.Table.children("tbody").remove();
 };
-
+/*
 var table = Tabular.Create($("table").eq(0), Feed, Tabular.Template.Basic);
+*/
 
-</script>
-
-<script>
+/*
 function Iterate(inFunction)
 {
 	var i;
@@ -242,4 +178,4 @@ function Uniques()
 	});
 	return matches;
 }
-</script>
+*/

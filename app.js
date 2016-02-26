@@ -3,8 +3,6 @@ var sax = require("sax");
 var zlib = require("zlib");
 var fs = require("fs");
 var express = require("express");
-var handlebars = require("express-handlebars");
-
 
 
 var Feed = {};
@@ -16,12 +14,13 @@ Feed.Config.PathDescriptions = "descriptions";
 Feed.Config.PathClients = "clients";
 
 Feed.Methods = {};
-Feed.Methods.BuildFiles = function XMLToJSON(inPathXML, inPathJSON, inPathDescription)
+Feed.Methods.BuildFiles = function(inPathXML, inPathJSON, inPathDescription)
 {
 	var State = {};
 	State.TagName = "";
 	State.Job = false;
 	State.Desciption = "";
+    State.Count = 0;
 	State.NewJob = function()
 	{
 		State.Job = {};
@@ -31,7 +30,8 @@ Feed.Methods.BuildFiles = function XMLToJSON(inPathXML, inPathJSON, inPathDescri
 		State.Job.Date = "";
 		State.Job.TaxDiv = ["", "", ""];
 		State.Job.TaxCat = ["", "", ""];
-		State.Job.TaxLoc = ["", "", ""];		
+		State.Job.TaxLoc = ["", "", ""];
+        State.Count++;
 	};
 	
 	var Stream = {};
@@ -41,13 +41,14 @@ Feed.Methods.BuildFiles = function XMLToJSON(inPathXML, inPathJSON, inPathDescri
 	Stream.SAX.on("error", console.log);
 	Stream.SAX.on("opentag", function (inNode)
 	{
+        
 		State.TagName = inNode.name;
 		if(State.TagName === "job")
 		{
 			if(State.Job)
 			{
 				Stream.JSON.write(JSON.stringify(State.Job)+",\n");
-				fs.writeFile(inPathDescription+"/"+State.Job.ID+".html", State.Desciption);
+				fs.writeFile(inPathDescription+"/"+State.Count+".html", State.Desciption);
 			}
 			else
 			{
@@ -62,8 +63,6 @@ Feed.Methods.BuildFiles = function XMLToJSON(inPathXML, inPathJSON, inPathDescri
 	{
 		Stream.JSON.write("{}];");
 		Stream.JSON.end();
-		
-		
 	});
 	Stream.SAX.on("text", function(inText)
 	{
@@ -144,20 +143,16 @@ Feed.Methods.Process = function(inPath)
 
 var Server = express();
 
-Server.engine("handlebars", handlebars());
-Server.set("view engine", "handlebars");
-
+Server.use("/components", express.static(__dirname+"/components"));
 Server.use("/clients", express.static(__dirname+"/clients"));
-Server.use("/test", express.static(__dirname+"/test"));
-Server.get("/:client/update", function(inReq, inRes, inNext)
+Server.get("/clients/:client/update", function(inReq, inRes, inNext)
 {
 	Feed.Methods.Process(__dirname + "/" + Feed.Config.PathClients + "/" + inReq.params.client);
 	inRes.send("updating", inReq.params.client);
 });
-
 Server.get("/", function(inReq, inRes, inNext)
 {
-	inRes.render("home", {layout:"main"});
+	inRes.send("feed running");
 });
 
 Server.listen(80);
