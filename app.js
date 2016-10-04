@@ -34,21 +34,27 @@ Feed.Methods.BuildFiles = function(inConfig, inPathJSON, inPathDescription)
 		{
 			if(State.Fields)
 			{
-				Stream.JSON.write(template(JSON.stringify(inConfig.Template), State.Fields)+",\n");
+				Stream.JSON.write(template(JSON.stringify(inConfig.Row), State.Fields));
+				if(State.Count != 0)
+				{
+					Stream.JSON.write(inConfig.Delimiter);
+				}
+				
 				fs.writeFile(inPathDescription+"/"+State.Fields[inConfig.Description.NameWith]+".html", State.Fields[inConfig.Description.PullFrom]);
+				State.Count++;
 			}
 			else
 			{
-				Stream.JSON.write("var Feed = [");
+				Stream.JSON.write(inConfig.Header);
 			}
 			State.Fields = {};
 		}
 	});
 	Stream.SAX.on("end", function()
 	{
-		Stream.JSON.write("{}];");
+		Stream.JSON.write(inConfig.Footer);
 		Stream.JSON.end();
-		console.log("done parsing");
+		console.log("done parsing", State.Count, "rows.");
 	});
 	Stream.SAX.on("text", function(inText)
 	{
