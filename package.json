@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.13.3",
     "express-handlebars": "^3.0.0",
+    "fs-extra": "^0.30.0",
     "sax": "^1.1.4",
     "string-template": "^1.0.0"
   }

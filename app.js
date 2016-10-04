@@ -1,7 +1,7 @@
 var http = require("http");
 var sax = require("sax");
 var zlib = require("zlib");
-var fs = require("fs");
+var fs = require("fs-extra");
 var express = require("express");
 var template = require("string-template");
 
@@ -34,12 +34,12 @@ Feed.Methods.BuildFiles = function(inConfig, inPathJSON, inPathDescription)
 		{
 			if(State.Fields)
 			{
-				Stream.JSON.write(template(JSON.stringify(inConfig.Row), State.Fields));
 				if(State.Count != 0)
 				{
 					Stream.JSON.write(inConfig.Delimiter);
 				}
-				
+				Stream.JSON.write(template(JSON.stringify(inConfig.Row), State.Fields));
+
 				fs.writeFile(inPathDescription+"/"+State.Fields[inConfig.Description.NameWith]+".html", State.Fields[inConfig.Description.PullFrom]);
 				State.Count++;
 			}
