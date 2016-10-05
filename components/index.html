@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+        <script src="/components/papaparse.min.js"></script>
+        <script src="/components/table.js"></script>
+        <link rel="stylesheet" type="text/css" href="/components/styles.css"></link>
+    </head>
+<body>
+    <div class="Tabular" ng-app="App" ng-controller="Controller" ng-cloak>
+        <table>
+            <thead>
+                <tr>
+                    <th ng-class="{Active: ($index == Table.Column)}"
+                        ng-repeat="cell in Table.Header track by $index"
+                        ng-click="Table.SetSort($index);">
+                        {{cell}}
+                        <div class="Center">
+                            <span class="Sort Up" ng-show="Table.ColumnDirection == 1">&#9650;</span>
+                            <span class="Sort Down" ng-show="Table.ColumnDirection == -1">&#9660;</span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in Table.Visible track by $index">
+                    <td ng-repeat="cell in row track by $index">{{cell}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            Showing {{Table.Page.min+1}} to {{Table.Page.max}} of {{Table.Rows.length}} results at
+            <select convert-to-number
+                ng-model="Table.PerPage"
+                ng-change="Table.UpdatePagination();"
+                ng-options="option for option in Table.PagingOptions track by option">
+            </select>
+            per page
+        </p>
+        <ul>
+            <li class="Jump First"
+                ng-click="Table.SetPage(0)"
+                ng-if="!Table.InRange(0)">
+                &#8249;&#8249;
+            </li>
+            <li ng-repeat="page in Table.Pages track by $index"
+                ng-click="Table.SetPage(page.index);"
+                ng-class="{Active: page.active}"
+                ng-if="Table.InRange(page.index)">
+                {{$index+1}}
+            </li>
+            <li class="Jump Last"
+                ng-click="Table.SetPage(Table.Pages.length-1)"
+                ng-if="!Table.InRange(Table.Pages.length-1)">
+                &#8250;&#8250;
+            </li>
+        </ul>
+    </div>
+    <script>
+        angular.module("App", ["Tabular"])
+        .controller("Controller", ["$scope", "Table", "Download", function($scope, Table, Download)
+        {
+            $scope.Table = Table.Create();
+            Download("/clients/springleaf/data.js", function(inData)
+            {
+                $scope.Table.Populate(inData.Header, inData.Rows);
+                console.log(inData);
+            });
+        }]);
+    </script>
+</body>
+</html>
