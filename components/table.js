@@ -13,6 +13,40 @@ angular.module("Tabular", [])
             Rows: [],
             Uniques: [],
         };
+        data.Pivot = function(inIndex)
+        {
+            var i;
+            var output;
+            var row;
+            var cell;
+            var match;
+
+            output = [];
+
+            for(i=0; i<data.Rows.length; i++)
+            {
+                row = data.Rows[i]
+                cell = row[inIndex];
+                match = false;
+
+                for(j=0; j<output.length; j++)
+                {
+                    if(cell == LUT[j].Value)
+                    {
+                        match = true;
+                        LUT[j].Rows.push(row);
+                        break;
+                    }
+                }
+                if(!match)
+                {
+                    LUT.push({
+                        Value: cell,
+                        Rows: [row]
+                    });
+                }
+            }
+        };
         var config = {
             step: function(inRow)
             {
@@ -86,12 +120,15 @@ angular.module("Tabular", [])
         Table.ColumnDirection = 1;
 
         Table.PagingOptions = [20, 50, 100, 200];
+        Table.PageRadius = 1;
+
         Table.PerPage = Table.PagingOptions[0];
+        Table.Pages = [];
         Table.Page = 0;
         Table.PageMin = 0;
         Table.PageMax = 0;
-        Table.PageRadius = 1;
-        Table.Pages = [];
+
+        // re-cut the data into pages of size Table.PerPage
         Table.UpdatePagination = function()
         {
             Table.Pages = [];

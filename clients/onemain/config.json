@@ -1,5 +1,5 @@
 {
-	"Source": "http://www.linkup.com/xmlFeed.php?gzip=1&access=t3n89z&company=38838&feed=a760880003e7ddedfef56acb3b09g511",
+	"Source": "http://www.linkup.com/xmlFeed.php?gzip=1&access=t3n89z&company=XXXX&feed=XXXX",
 	"Header" : "Title, ID, URL, Division, Location\n",
 	"Delimiter" : "\n",
 	"Row": "\"{title}\",\"{jobkey}\",\"{applyurl}\",\"{company}-{department}\",\"{city}, {state}\"",

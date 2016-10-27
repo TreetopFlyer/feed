@@ -55,6 +55,14 @@
                 &#8250;&#8250;
             </li>
         </ul>
+
+        <div style="display:block; clear:both;"></div>
+
+        <dl>
+            <dt>{{Data.Uniques[4].Title}}<strong>{{Data.Uniques[4].Uniques.length}}</strong></dt>
+            <dd ng-repeat="row in Data.Uniques[4].Uniques track by $index">{{row.Value}}<strong>{{row.Rows.length}}</strong></dd>
+        </dl>
+
     </div>
     <script>
         angular.module("App", ["Tabular"])
@@ -63,6 +71,7 @@
             $scope.Table = Table.Create();
             Download("/clients/springleaf/data.js", function(inData)
             {
+                $scope.Data = inData;
                 $scope.Table.Populate(inData.Header, inData.Rows);
                 console.log(inData);
             });
