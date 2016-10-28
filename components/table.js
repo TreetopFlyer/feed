@@ -4,49 +4,110 @@ angular.module("Tabular", [])
         'http://localhost/**'
     ]);
 })
-.factory("Download", ["$http", function($http)
+.factory("TableData", [function()
+{
+    var obj = {};
+    obj.Pivot = function(inData, inIndex)
+    {
+        var i;
+        var output;
+        var row;
+        var cell;
+        var match;
+
+        output = [];
+
+        for(i=0; i<inData.Rows.length; i++)
+        {
+            row = inData.Rows[i];
+            cell = row[inIndex];
+            match = false;
+
+            for(j=0; j<output.length; j++)
+            {
+                if(cell.toLowerCase() == output[j].Name.toLowerCase())
+                {
+                    match = true;
+                    output[j].Rows.push(row);
+                    break;
+                }
+            }
+            if(!match)
+            {
+                var newTable;
+
+                newTable = obj.Create();
+                newTable.Name = cell;
+                newTable.Header = inData.Header;
+                newTable.Rows = [row];
+
+                output.push(newTable);
+            }
+        }
+
+        return output;
+    };
+
+
+
+    obj.PivotTree = function(inData, inIndexArray)
+    {
+        var i, j, k;
+        var branch;
+        var root;
+
+        var genOld = [];
+        var genNew = [];
+
+        root = inData.Pivot(inIndexArray[0]);
+        genOld = root;
+
+        if(inIndexArray.length > 1)
+        {
+            for(i=1; i<inIndexArray.length; i++)
+            {
+                for(j=0; j<genOld.length; j++)
+                {
+                    branch = genOld[j].Pivot(inIndexArray[i]);
+                    genOld[j].Children = branch;
+                    for(k=0; k<branch.length; k++)
+                    {
+                        genNew.push(branch[k]);
+                    }
+                }
+                
+                genOld = genNew;
+                genNew = [];
+            }
+        }
+
+        return root;
+    };
+
+    obj.Create = function()
+    {
+        var data = {
+            Name:"",
+            Header:[],
+            Rows:[],
+        };
+
+        data.Pivot = function(inIndex)
+        {
+            return obj.Pivot(data, inIndex);
+        };
+
+        return data;
+    }
+
+    return obj;
+}])
+.factory("Download", ["$http", "TableData", function($http, TableData)
 {
     return function(inURL, inDone)
     {
-        var data = {
-            Header: undefined,
-            Rows: [],
-            Uniques: [],
-        };
-        data.Pivot = function(inIndex)
-        {
-            var i;
-            var output;
-            var row;
-            var cell;
-            var match;
+        var data = TableData.Create();
 
-            output = [];
-
-            for(i=0; i<data.Rows.length; i++)
-            {
-                row = data.Rows[i]
-                cell = row[inIndex];
-                match = false;
-
-                for(j=0; j<output.length; j++)
-                {
-                    if(cell == LUT[j].Value)
-                    {
-                        match = true;
-                        LUT[j].Rows.push(row);
-                        break;
-                    }
-                }
-                if(!match)
-                {
-                    LUT.push({
-                        Value: cell,
-                        Rows: [row]
-                    });
-                }
-            }
-        };
         var config = {
             step: function(inRow)
             {
@@ -58,45 +119,17 @@ angular.module("Tabular", [])
 
                 row = inRow.data[0];
 
-                if(data.Header === undefined)
+                if(data.Header.length == 0)
                 {
                     data.Header = row;
-                    for(i=0; i<row.length; i++)
-                    {
-                        data.Uniques[i] = {
-                            Title:row[i],
-                            Uniques:[]
-                        }
-                    }
                 }
                 else
                 {
                     data.Rows.push(row);
-                    for(i=0; i<row.length; i++)
-                    {
-                        cell = row[i];
-                        match = false;
-                        LUT = data.Uniques[i].Uniques;
-                        for(j=0; j<LUT.length; j++)
-                        {
-                            if(cell == LUT[j].Value)
-                            {
-                                match = true;
-                                LUT[j].Rows.push(row);
-                                break;
-                            }
-                        }
-                        if(!match)
-                        {
-                            LUT.push({
-                                Value: cell,
-                                Rows: [row]
-                            });
-                        }
-                    }
                 }
             },
-            complete: function(){
+            complete: function()
+            {
                 inDone(data);
             }
         };
@@ -109,7 +142,7 @@ angular.module("Tabular", [])
 .factory("Table", ["$http", function($http)
 {
     var obj = {};
-    obj.Create = function(inURL)
+    obj.Create = function()
     {
         var Table = {};
         Table.Header = undefined;
@@ -202,10 +235,10 @@ angular.module("Tabular", [])
         }
 
 
-        Table.Populate = function(inArrayHeader, inArrayRows)
+        Table.Populate = function(inTableData)
         {
-            Table.Header = inArrayHeader;
-            Table.Rows = inArrayRows;
+            Table.Header = inTableData.Header;
+            Table.Rows = inTableData.Rows;
             Table.UpdatePagination();
         };
 

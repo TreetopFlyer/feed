@@ -58,22 +58,60 @@
 
         <div style="display:block; clear:both;"></div>
 
-        <dl>
-            <dt>{{Data.Uniques[4].Title}}<strong>{{Data.Uniques[4].Uniques.length}}</strong></dt>
-            <dd ng-repeat="row in Data.Uniques[4].Uniques track by $index">{{row.Value}}<strong>{{row.Rows.length}}</strong></dd>
+        <!--
+        <h3>States (<strong>{{States.length}}</strong>)</h3>
+        <dl ng-repeat="table in States track by $index">
+            <dt>{{table.Name}}: <strong>{{table.Rows.length}}</strong></dt>
+            <dd ng-repeat="row in table.Rows track by $index">
+                {{row[4]}}
+                &mdash;
+                {{row[0]}}
+            </dd>
         </dl>
+        -->
+
+        <div style="max-width:500px; float:left;">
+            <dl ng-repeat="state in Location">
+                <dt>{{state.Name}} <strong>{{state.Rows.length}}</strong></dt>
+                <dd ng-repeat="city in state.Children" style="margin-top:15px;">
+                    <div style="border-bottom:1px solid #aaa; padding:5px; margin-bottom:8px;">{{city.Name}}</div>
+                    <a href="" ng-repeat="jobs in city.Children" style="display:block; padding:0 0 10px 15px;">
+                        {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">{{jobs.Rows.length}} Openings</strong>
+                    </a>
+                </dd>
+            </dl>
+        </div>
+
+        <div style="max-width:500px; float:left;">
+            <dl ng-repeat="type in Category">
+                <dt>{{type.Name}} <strong>{{type.Rows.length}}</strong></dt>
+                <dd ng-repeat="position in type.Children" style="margin-top:15px;">
+                    <div style="border-bottom:1px solid #aaa; padding:5px; margin-bottom:8px;">{{position.Name}}</div>
+                    <a href="" ng-repeat="jobs in position.Children" style="display:block; padding:0 0 10px 15px;">
+                        {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">{{jobs.Rows.length}} Openings</strong>
+                    </a>
+                </dd>
+            </dl>
+        </div>
 
     </div>
     <script>
         angular.module("App", ["Tabular"])
-        .controller("Controller", ["$scope", "Table", "Download", function($scope, Table, Download)
+        .controller("Controller", ["$scope", "Table", "Download", "TableData", function($scope, Table, Download, TableData)
         {
             $scope.Table = Table.Create();
-            Download("/clients/springleaf/data.js", function(inData)
+            $scope.States = false;
+            $scope.Location = false;
+            $scope.Category = false;
+            Download("/clients/springleaf/data.js", function(inTableData)
             {
-                $scope.Data = inData;
-                $scope.Table.Populate(inData.Header, inData.Rows);
-                console.log(inData);
+                $scope.Table.Populate(inTableData);
+                $scope.States = inTableData.Pivot(6);
+
+                $scope.Location = TableData.PivotTree(inTableData, [6, 5, 0]);
+                $scope.Category = TableData.PivotTree(inTableData, [1, 0, 6]);
+
+                console.log($scope.Location);
             });
         }]);
     </script>
