@@ -2,7 +2,7 @@
 	"Source": "http://www.linkup.com/xmlFeed.php?gzip=1&access=t3n89z&company=589&feed=55a7cf9c71f1c9c495413f934dd1g492",
 	"Header" : "Title, Category, ID, URL, Division, City, State\n",
 	"Delimiter" : "\n",
-	"Row": "\"{title}\",\"{category}\",\"{jobkey}\",\"{applyurl}\",\"{company}-{department}\",\"{city}\",\"{state}\"",
+	"Row": "\"{title}\",\"{category}\",\"{jobkey}\",\"{applyurl}\",\"{department}\",\"{city}\",\"{state}\"",
 	"Footer" : "",
 	"Description":{
 		"NameWith":"jobkey",

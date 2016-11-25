@@ -1,5 +1,7 @@
-angular.module("Tabular", [])
-.config(function($sceDelegateProvider) {
+angular
+.module("Tabular", [])
+.config(function($sceDelegateProvider)
+{
     $sceDelegateProvider.resourceUrlWhitelist([
         'http://localhost/**'
     ]);
@@ -48,8 +50,6 @@ angular.module("Tabular", [])
         return output;
     };
 
-
-
     obj.PivotTree = function(inData, inIndexArray)
     {
         var i, j, k;
@@ -59,7 +59,7 @@ angular.module("Tabular", [])
         var genOld = [];
         var genNew = [];
 
-        root = inData.Pivot(inIndexArray[0]);
+        root = obj.Pivot(inData, inIndexArray[0]);
         genOld = root;
 
         if(inIndexArray.length > 1)
@@ -68,36 +68,27 @@ angular.module("Tabular", [])
             {
                 for(j=0; j<genOld.length; j++)
                 {
-                    branch = genOld[j].Pivot(inIndexArray[i]);
+                    branch = obj.Pivot(genOld[j], inIndexArray[i]);
                     genOld[j].Children = branch;
                     for(k=0; k<branch.length; k++)
                     {
                         genNew.push(branch[k]);
                     }
                 }
-                
                 genOld = genNew;
                 genNew = [];
             }
         }
-
         return root;
     };
 
     obj.Create = function()
     {
-        var data = {
+        return {
             Name:"",
             Header:[],
             Rows:[],
         };
-
-        data.Pivot = function(inIndex)
-        {
-            return obj.Pivot(data, inIndex);
-        };
-
-        return data;
     }
 
     return obj;
@@ -139,7 +130,7 @@ angular.module("Tabular", [])
         });
     };
 }])
-.factory("Table", ["$http", function($http)
+.factory("Table", [function()
 {
     var obj = {};
     obj.Create = function()
@@ -232,9 +223,7 @@ angular.module("Tabular", [])
                 return (aProp === bProp ? 0 : (aProp < bProp ? -Table.ColumnDirection : Table.ColumnDirection));
             });
             Table.UpdatePagination();
-        }
-
-
+        };
         Table.Populate = function(inTableData)
         {
             Table.Header = inTableData.Header;

@@ -4,115 +4,137 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
         <script src="/components/papaparse.min.js"></script>
         <script src="/components/table.js"></script>
+        <script src="/components/mapper.js"></script>
         <link rel="stylesheet" type="text/css" href="/components/styles.css"></link>
     </head>
 <body>
-    <div class="Tabular" ng-app="App" ng-controller="Controller" ng-cloak>
-        <table>
-            <thead>
-                <tr>
-                    <th ng-class="{Active: ($index == Table.Column)}"
-                        ng-repeat="cell in Table.Header track by $index"
-                        ng-click="Table.SetSort($index);">
-                        {{cell}}
-                        <div class="Center">
-                            <span class="Sort Up" ng-show="Table.ColumnDirection == 1">&#9650;</span>
-                            <span class="Sort Down" ng-show="Table.ColumnDirection == -1">&#9660;</span>
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="row in Table.Visible track by $index">
-                    <td ng-repeat="cell in row track by $index">{{cell}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>
-            Showing {{Table.Page.min+1}} to {{Table.Page.max}} of {{Table.Rows.length}} results at
-            <select convert-to-number
-                ng-model="Table.PerPage"
-                ng-change="Table.UpdatePagination();"
-                ng-options="option for option in Table.PagingOptions track by option">
-            </select>
-            per page
-        </p>
-        <ul>
-            <li class="Jump First"
-                ng-click="Table.SetPage(0)"
-                ng-if="!Table.InRange(0)">
-                &#8249;&#8249;
-            </li>
-            <li ng-repeat="page in Table.Pages track by $index"
-                ng-click="Table.SetPage(page.index);"
-                ng-class="{Active: page.active}"
-                ng-if="Table.InRange(page.index)">
-                {{$index+1}}
-            </li>
-            <li class="Jump Last"
-                ng-click="Table.SetPage(Table.Pages.length-1)"
-                ng-if="!Table.InRange(Table.Pages.length-1)">
-                &#8250;&#8250;
-            </li>
-        </ul>
 
-        <div style="display:block; clear:both;"></div>
+    <div ng-app="App" ng-controller="Controller" ng-cloak>
 
-        <!--
-        <h3>States (<strong>{{States.length}}</strong>)</h3>
-        <dl ng-repeat="table in States track by $index">
-            <dt>{{table.Name}}: <strong>{{table.Rows.length}}</strong></dt>
-            <dd ng-repeat="row in table.Rows track by $index">
-                {{row[4]}}
-                &mdash;
-                {{row[0]}}
-            </dd>
-        </dl>
-        -->
-
-        <div style="max-width:500px; float:left;">
-            <dl ng-repeat="state in Location">
-                <dt>{{state.Name}} <strong>{{state.Rows.length}}</strong></dt>
-                <dd ng-repeat="city in state.Children" style="margin-top:15px;">
-                    <div style="border-bottom:1px solid #aaa; padding:5px; margin-bottom:8px;">{{city.Name}}</div>
-                    <a href="" ng-repeat="jobs in city.Children" style="display:block; padding:0 0 10px 15px;">
-                        {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">{{jobs.Rows.length}} Openings</strong>
-                    </a>
-                </dd>
-            </dl>
+        <div class="Band">
+            <div class="Center">
+                <div class="Tabular">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th ng-click="Table.SetSort(0);">
+                                    Title
+                                    <div class="Center">
+                                        <span class="Sort Up" ng-show="Table.ColumnDirection == 1">&#9650;</span>
+                                        <span class="Sort Down" ng-show="Table.ColumnDirection == -1">&#9660;</span>
+                                    </div>
+                                </th>
+                                <th ng-click="Table.SetSort(1);">
+                                    Category
+                                    <div class="Center">
+                                        <span class="Sort Up" ng-show="Table.ColumnDirection == 1">&#9650;</span>
+                                        <span class="Sort Down" ng-show="Table.ColumnDirection == -1">&#9660;</span>
+                                    </div>
+                                </th>
+                                <th ng-click="Table.SetSort(6);">
+                                    Location
+                                    <div class="Center">
+                                        <span class="Sort Up" ng-show="Table.ColumnDirection == 1">&#9650;</span>
+                                        <span class="Sort Down" ng-show="Table.ColumnDirection == -1">&#9660;</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in Table.Visible track by $index">
+                                <td>
+                                    <a href="/clients/springleaf/descriptions/{{row[2]}}.html" target="_blank">{{row[0]}}</a>
+                                </td>
+                                <td>{{row[1]}}</td>
+                                <td>{{row[5]}}, {{row[6]}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        Showing {{Table.Page.min+1}} to {{Table.Page.max}} of {{Table.Rows.length}} results at
+                        <select convert-to-number
+                            ng-model="Table.PerPage"
+                            ng-change="Table.UpdatePagination();"
+                            ng-options="option for option in Table.PagingOptions track by option">
+                        </select>
+                        per page
+                    </p>
+                    <ul>
+                        <li class="Jump First"
+                            ng-click="Table.SetPage(0)"
+                            ng-if="!Table.InRange(0)">
+                            &#8249;&#8249;
+                        </li>
+                        <li ng-repeat="page in Table.Pages track by $index"
+                            ng-click="Table.SetPage(page.index);"
+                            ng-class="{Active: page.active}"
+                            ng-if="Table.InRange(page.index)">
+                            {{$index+1}}
+                        </li>
+                        <li class="Jump Last"
+                            ng-click="Table.SetPage(Table.Pages.length-1)"
+                            ng-if="!Table.InRange(Table.Pages.length-1)">
+                            &#8250;&#8250;
+                        </li>
+                    </ul>
+                    <div class="Clear"></div>
+                </div>
+            </div>
         </div>
 
-        <div style="max-width:500px; float:left;">
-            <dl ng-repeat="type in Category">
-                <dt>{{type.Name}} <strong>{{type.Rows.length}}</strong></dt>
-                <dd ng-repeat="position in type.Children" style="margin-top:15px;">
-                    <div style="border-bottom:1px solid #aaa; padding:5px; margin-bottom:8px;">{{position.Name}}</div>
-                    <a href="" ng-repeat="jobs in position.Children" style="display:block; padding:0 0 10px 15px;">
-                        {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">{{jobs.Rows.length}} Openings</strong>
-                    </a>
-                </dd>
-            </dl>
+        <div class="Band">
+            <div class="Center">
+
+                <div class="Column Stack Location">
+                    <h3>Browse by Location</h3>
+                    <dl class="Collapse" ng-repeat="state in Location">
+                        <dt ng-click="Reveal(state);"><span>{{state.Name | StateName}}</span> <strong>{{state.Rows.length}} Jobs</strong></dt>
+                        <dd ng-repeat="city in state.Children">
+                            <strong ng-click="Reveal(city);">{{city.Name}}</strong>
+                            <a ng-click="Reveal(jobs);" href="" ng-repeat="jobs in city.Children">
+                                {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">( {{jobs.Rows.length}} Openings )</strong>
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="Column Stack Type" style="float:right;">
+                    <h3>Browse by Category</h3>
+                    <dl class="Collapse" ng-repeat="type in Category">
+                        <dt ng-click="Reveal(type);"><span>{{type.Name}}</span> <strong>{{type.Rows.length}} Jobs</strong></dt>
+                        <dd ng-repeat="position in type.Children">
+                            <strong ng-click="Reveal(position);">{{position.Name}}</strong>
+                            <a ng-click="Reveal(jobs);" href="" ng-repeat="jobs in position.Children">
+                                {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">( {{jobs.Rows.length}} Openings )</strong>
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+
+            </div>
         </div>
 
     </div>
+
+
     <script>
-        angular.module("App", ["Tabular"])
+        angular.module("App", ["Tabular", "Mapper"])
         .controller("Controller", ["$scope", "Table", "Download", "TableData", function($scope, Table, Download, TableData)
         {
             $scope.Table = Table.Create();
             $scope.States = false;
             $scope.Location = false;
             $scope.Category = false;
+
             Download("/clients/springleaf/data.js", function(inTableData)
             {
-                $scope.Table.Populate(inTableData);
-                $scope.States = inTableData.Pivot(6);
-
-                $scope.Location = TableData.PivotTree(inTableData, [6, 5, 0]);
+                $scope.Location = TableData.PivotTree(inTableData, [6, 0, 5]);
                 $scope.Category = TableData.PivotTree(inTableData, [1, 0, 6]);
-
-                console.log($scope.Location);
             });
+
+            $scope.Reveal = function(inTableData)
+            {
+                $scope.Table.Populate(inTableData);
+            };
         }]);
     </script>
 </body>

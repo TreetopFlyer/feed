@@ -1,3 +1,98 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+
+*
+{
+    position:relative;
+    margin:0;
+    padding:0;
+    border:0;
+    font-family: Open Sans, Arial, sans-serif;
+}
+.Band
+{
+    text-align:center;
+}
+.Center
+{
+    position:relative;
+    max-width:1100px;
+    margin:0 auto;
+    text-align:left;
+}
+.Clear
+{
+    display:block;
+    clear:both;
+}
+.Columns
+{
+    overflow:hidden;
+}
+.Column
+{
+    width:45%;
+    float:left;
+}
+
+.Stack h3
+{
+    margin:1rem 0 1rem 0;
+    font-size:2rem;
+    font-weight:bold;
+}
+.Stack dl
+{
+    padding-bottom:1rem;
+}
+.Stack dt
+{
+    border-bottom:1px solid #ddd;
+    margin-bottom:1rem;
+    overflow:hidden;
+
+    font-size:1.5rem;
+}
+.Stack dt strong
+{
+    display:block;
+    float:right;
+    padding:1rem;
+    font-size:1.0rem;
+}
+.Stack dt span
+{
+    display:block;
+    float:left;
+    padding:15px;
+}
+.Stack dd
+{
+    padding:0 0 0 1rem;
+    margin-bottom:0.8rem;
+    overflow:hidden;
+}
+.Stack dd strong
+{
+    display:block;
+    font-weight:lighter;
+    font-size:1.0rem;
+    
+}
+.Stack dd a
+{
+    display:block;
+
+    color:#666;
+    font-size:0.8rem;
+    text-decoration:none;
+}
+.Stack dd a strong
+{
+    display:inline;
+    font-size:0.8rem;
+}
+
+
 .Tabular
 {
     width:100%;
