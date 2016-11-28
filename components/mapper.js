@@ -3,6 +3,7 @@ angular.module("Mapper", [])
 {
     var states = {
         "AL" : "Alabama",
+        "AZ" : "Arizona",
         "AK" : "Alaska",
         "AR" : "Arkansas",
         "CA" : "California",

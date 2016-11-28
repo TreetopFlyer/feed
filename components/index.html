@@ -6,10 +6,52 @@
         <script src="/components/table.js"></script>
         <script src="/components/mapper.js"></script>
         <link rel="stylesheet" type="text/css" href="/components/styles.css"></link>
+        <meta charset="UTF-8">
     </head>
 <body>
 
     <div ng-app="App" ng-controller="Controller" ng-cloak>
+
+        <div class="Band">
+            <div class="Center Columns">
+
+                <div class="Column Stack Location">
+                    <h3>Browse by Location</h3>
+                    <dl class="Collapse" ng-repeat="state in Location | orderBy: 'Name'" ng-class="{Open: (state.Open)}">
+                        <dt ng-click="Reveal(state);">
+                            <strong>{{state.Name | StateName}}</strong>
+                            <span>{{state.Rows.length}}</span>
+                        </dt>
+                        <dd ng-repeat="position in state.Children | orderBy: '-Rows.length'">
+                            <strong ng-click="Reveal(position);">{{position.Name}}:</strong>
+                            <a ng-repeat="city in position.Children" ng-click="Reveal(city);" href="">
+                                <span style="text-tranform:capitalize;">{{city.Name}}</span>
+                                <strong ng-hide="city.Rows.length == 1">( {{city.Rows.length}} Openings )</strong>
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="Column Stack Type" style="float:right;">
+                    <h3>Browse by Category</h3>
+                    <dl ng-repeat="type in Category | orderBy: '-Rows.length'" ng-class="{Open: (type.Open)}">
+                        <dt ng-click="Reveal(type);">
+                            <strong>{{type.Name}}</strong>
+                            <span>{{type.Rows.length}}</span>
+                        </dt>
+                        <dd ng-repeat="position in type.Children | orderBy: 'Name'">
+                            <strong ng-click="Reveal(position);">{{position.Name | StateName}}</strong>
+                            <a ng-repeat="state in position.Children" ng-click="Reveal(state);" href="">
+                                <span>{{state.Name}}</span>
+                                <strong ng-hide="state.Rows.length == 1">( {{state.Rows.length}} Openings )</strong>
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+
+            </div>
+        </div>
+
 
         <div class="Band">
             <div class="Center">
@@ -43,7 +85,7 @@
                         <tbody>
                             <tr ng-repeat="row in Table.Visible track by $index">
                                 <td>
-                                    <a href="/clients/springleaf/descriptions/{{row[2]}}.html" target="_blank">{{row[0]}}</a>
+                                    <a href="/clients/wegmans/descriptions/{{row[2]}}.html" target="_blank">{{row[0]}}</a>
                                 </td>
                                 <td>{{row[1]}}</td>
                                 <td>{{row[5]}}, {{row[6]}}</td>
@@ -82,36 +124,6 @@
             </div>
         </div>
 
-        <div class="Band">
-            <div class="Center">
-
-                <div class="Column Stack Location">
-                    <h3>Browse by Location</h3>
-                    <dl class="Collapse" ng-repeat="state in Location">
-                        <dt ng-click="Reveal(state);"><span>{{state.Name | StateName}}</span> <strong>{{state.Rows.length}} Jobs</strong></dt>
-                        <dd ng-repeat="city in state.Children">
-                            <strong ng-click="Reveal(city);">{{city.Name}}</strong>
-                            <a ng-click="Reveal(jobs);" href="" ng-repeat="jobs in city.Children">
-                                {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">( {{jobs.Rows.length}} Openings )</strong>
-                            </a>
-                        </dd>
-                    </dl>
-                </div>
-                <div class="Column Stack Type" style="float:right;">
-                    <h3>Browse by Category</h3>
-                    <dl class="Collapse" ng-repeat="type in Category">
-                        <dt ng-click="Reveal(type);"><span>{{type.Name}}</span> <strong>{{type.Rows.length}} Jobs</strong></dt>
-                        <dd ng-repeat="position in type.Children">
-                            <strong ng-click="Reveal(position);">{{position.Name}}</strong>
-                            <a ng-click="Reveal(jobs);" href="" ng-repeat="jobs in position.Children">
-                                {{jobs.Name}} <strong ng-hide="jobs.Rows.length == 1">( {{jobs.Rows.length}} Openings )</strong>
-                            </a>
-                        </dd>
-                    </dl>
-                </div>
-
-            </div>
-        </div>
 
     </div>
 
@@ -124,15 +136,34 @@
             $scope.States = false;
             $scope.Location = false;
             $scope.Category = false;
+            $scope.Active = [false];
 
             Download("/clients/springleaf/data.js", function(inTableData)
             {
                 $scope.Location = TableData.PivotTree(inTableData, [6, 0, 5]);
-                $scope.Category = TableData.PivotTree(inTableData, [1, 0, 6]);
+                $scope.Category = TableData.PivotTree(inTableData, [1, 6, 0]);
             });
 
             $scope.Reveal = function(inTableData)
             {
+                var i;
+
+                for(i=0; i<$scope.Active.length; i++)
+                {
+                    $scope.Active[i].Open = false;
+                }
+                if($scope.Active[0] != inTableData)
+                {
+                    $scope.Active = TableData.Ancestors(inTableData);
+                    for(i=0; i<$scope.Active.length; i++)
+                    {
+                        $scope.Active[i].Open = true;
+                    }
+                }
+                else
+                {
+                    $scope.Active = [false];
+                }
                 $scope.Table.Populate(inTableData);
             };
         }]);

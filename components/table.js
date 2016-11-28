@@ -72,6 +72,7 @@ angular
                     genOld[j].Children = branch;
                     for(k=0; k<branch.length; k++)
                     {
+                        branch[k].Parent =  genOld[j];
                         genNew.push(branch[k]);
                     }
                 }
@@ -81,6 +82,18 @@ angular
         }
         return root;
     };
+
+    obj.Ancestors = function(inData)
+    {
+        var chain = [inData];
+        var data = inData;
+        while(data.Parent != undefined)
+        {
+            data = data.Parent;
+            chain.push(data);
+        }
+        return chain;
+    }
 
     obj.Create = function()
     {
